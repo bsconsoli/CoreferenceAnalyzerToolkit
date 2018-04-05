@@ -30,11 +30,7 @@ class ParserDemo {
      *
      */
     public static void main(String[] args) {
-        String parserModel = "edu/stanford/nlp/models/lexparser/frenchFactored.ser.gz";
-        if (args.length > 0) {
-            parserModel = args[0];
-        }
-        LexicalizedParser lp = LexicalizedParser.loadModel(parserModel);
+        LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/frenchFactored.ser.gz");
 
         if (args.length == 0) {
             demoAPI(lp);
@@ -44,27 +40,18 @@ class ParserDemo {
         }
     }
 
-    /**
-     * demoDP demonstrates turning a file into tokens and then parse
-     * trees.  Note that the trees are printed by calling pennPrint on
-     * the Tree object.  It is also possible to pass a PrintWriter to
-     * pennPrint if you want to capture the output.
-     * This code will work with any supported language.
-     */
     public static void demoDP(LexicalizedParser lp, String filename) {
-        // This option shows loading, sentence-segmenting and tokenizing
-        // a file using DocumentPreprocessor.
-        TreebankLanguagePack tlp = lp.treebankLanguagePack(); // a PennTreebankLanguagePack for English
+        TreebankLanguagePack tlp = lp.treebankLanguagePack();
         GrammaticalStructureFactory gsf = null;
+        
         if (tlp.supportsGrammaticalStructures()) {
             gsf = tlp.grammaticalStructureFactory();
         }
-        // You could also create a tokenizer here (as below) and pass it
-        // to DocumentPreprocessor
+
         for (List<HasWord> sentence : new DocumentPreprocessor(filename)) {
             Tree parse = lp.apply(sentence);
-            parse.pennPrint();
-            System.out.println();
+            String parsedString = parse.toString();
+            System.out.println(parsedString);
 
             if (gsf != null) {
                 GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
@@ -81,13 +68,8 @@ class ParserDemo {
                 PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
         Tokenizer<CoreLabel> tok =
                 tokenizerFactory.getTokenizer(new StringReader(sent2));
-        List<CoreLabel> rawWords2 = tok.tokenize();
-        Tree parse = lp.apply(rawWords2);
-        ArrayList<TaggedWord> parsed = parse.taggedYield();
-        //for(TaggedWord p:parsed){
-       //     System.out.println(p.tag());
-       //     System.out.println(p);
-       // }
+        List<CoreLabel> rawWords = tok.tokenize();
+        Tree parse = lp.apply(rawWords);
         String parsedString = parse.toString();
         System.out.println(parsedString);
     }
