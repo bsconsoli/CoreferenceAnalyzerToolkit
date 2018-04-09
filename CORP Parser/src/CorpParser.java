@@ -10,7 +10,7 @@ public class CorpParser {
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[0]), "ISO-8859-1"))) {
             String line;
-            PrintWriter output = new PrintWriter("output.txt", "ISO-8859-1");
+            PrintWriter output = new PrintWriter("output.txt", "UTF-8");
             //BufferedWriter output = new BufferedWriter(new FileWriter("output.txt"));
             while ((line = br.readLine()) != null) {
                 if (line.contains("sn id=")){
