@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class CorpParser {
@@ -10,8 +8,10 @@ public class CorpParser {
             System.exit(-1);
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(args[0]))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[0]), "ISO-8859-1"))) {
             String line;
+            PrintWriter output = new PrintWriter("output.txt", "ISO-8859-1");
+            //BufferedWriter output = new BufferedWriter(new FileWriter("output.txt"));
             while ((line = br.readLine()) != null) {
                 if (line.contains("sn id=")){
                     int indexSent = line.indexOf("sentenca=");
@@ -22,10 +22,11 @@ public class CorpParser {
                     int indexSintNumInit = line.indexOf('"', indexSint);
                     int indexSintNumFin = line.indexOf('"', indexSintNumInit+1);
                     String sint = line.substring(indexSintNumInit+1, indexSintNumFin);
+                    output.println(sent + ";" + sint);
                     System.out.println("Sentença: " + sent + " | Sintagma: " + sint);
                 }
-
             }
+            output.close();
         } catch (IOException e){
             e.printStackTrace();
             System.exit(-1);
