@@ -2,17 +2,21 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class CorpParser {
-    public static void main(String[] args) {
-        if (args.length == 0){
-            System.out.println("Arg1 = CORP XML file");
-            System.exit(-1);
-        }
+    public static void parseCorpXML(String corpXML) {
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(args[0]), "ISO-8859-1"))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(corpXML), "ISO-8859-1"))) {
             String line;
-            PrintWriter output = new PrintWriter("output.txt", "UTF-8");
-            //BufferedWriter output = new BufferedWriter(new FileWriter("output.txt"));
+            String numCadeia = "0";
+            ArrayList<NounPhrase> CorpNPs = new ArrayList<>();
+
             while ((line = br.readLine()) != null) {
+                if (line.contains("Cadeia_")){
+                    int indexCad = line.indexOf("Cadeia");
+                    int indexCadNumInit = line.indexOf('_', indexCad);
+                    int indexCadNumFin = line.indexOf('>', indexCad);
+                    numCadeia = line.substring(indexCadNumInit+1, indexCadNumFin);
+                }
+
                 if (line.contains("sn id=")){
                     int indexSent = line.indexOf("sentenca=");
                     int indexSentNumInit = line.indexOf('"', indexSent);
@@ -22,11 +26,11 @@ public class CorpParser {
                     int indexSintNumInit = line.indexOf('"', indexSint);
                     int indexSintNumFin = line.indexOf('"', indexSintNumInit+1);
                     String sint = line.substring(indexSintNumInit+1, indexSintNumFin);
-                    output.println(sent + ";" + sint);
-                    System.out.println("Sentença: " + sent + " | Sintagma: " + sint);
+                    CorpNPs.add(new NounPhrase(numCadeia,sent,sint));
                 }
             }
-            output.close();
+
+            txtWriter.writeNounPhraseList("outputCORP.txt", CorpNPs);
         } catch (IOException e){
             e.printStackTrace();
             System.exit(-1);

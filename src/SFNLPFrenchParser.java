@@ -1,6 +1,3 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,29 +10,16 @@ import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 
 class SFNLPFrenchParser {
 
-    public static void main(String[] args) {
-        if (args.length == 0){
-            System.out.println("Arg1 = frenchText.txt; Arg2 = CORP NP chains");
-            System.exit(-1);
-        }
+    public static void frenchParser(String frenchText) {
         LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/frenchFactored.ser.gz");
-        SFNLPFrenchParser pd = new SFNLPFrenchParser();
 
-        String textFile = args[0];
-        ArrayList<NounPhrase> frenchNPs = pd.parser(lp, textFile);
-        try (BufferedReader br = new BufferedReader(new FileReader(args[1]))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.equalsIgnoreCase("")) continue;
-                System.out.println("French: " + line);
-            }
-        } catch (IOException e){
-            e.printStackTrace();
-            System.exit(-1);
-        }
+        ArrayList<NounPhrase> frenchNPs = parser(lp, frenchText);
+
+        txtWriter.writeNounPhraseList("outputParser.txt", frenchNPs);
+
     }
 
-    private ArrayList<NounPhrase> parser(LexicalizedParser lp, String filename) {
+    private static ArrayList<NounPhrase> parser(LexicalizedParser lp, String filename) {
 
         //ArrayList<Token> tokens = new ArrayList<>();
         ArrayList<NounPhrase> nounPhrases = new ArrayList<>();
@@ -44,17 +28,17 @@ class SFNLPFrenchParser {
         for (List<HasWord> sentence : new DocumentPreprocessor(filename)) {
             Tree parse = lp.apply(sentence);
             ArrayList<Tree> nps = npExtractor(parse);
-            for(int i = 0; i < nps.size(); i++){
-                ArrayList<Word> nounPhrase = nps.get(i).yieldWords();
+            for (Tree np : nps) {
+                ArrayList<Word> nounPhrase = np.yieldWords();
                 StringBuilder npstr = new StringBuilder();
-                for(int j = 0; j < nounPhrase.size(); j++){
-                    if(j+1 == nounPhrase.size()){
+                for (int j = 0; j < nounPhrase.size(); j++) {
+                    if (j + 1 == nounPhrase.size()) {
                         npstr.append(nounPhrase.get(j));
-                    } else{
-                        npstr.append((nounPhrase.get(j) + " "));
+                    } else {
+                        npstr.append(nounPhrase.get(j)).append(" ");
                     }
                 }
-                nounPhrases.add(new NounPhrase(npstr.toString(), sentenceNumber));
+                nounPhrases.add(new NounPhrase(String.valueOf(sentenceNumber), npstr.toString()));
             }
             //ArrayList<TaggedWord> words = parse.taggedYield();
             //for(TaggedWord t: words) {
@@ -64,21 +48,21 @@ class SFNLPFrenchParser {
             sentenceNumber++;
         }
 
-        for(NounPhrase np: nounPhrases){
-            System.out.println("Sentence " + np.sentenceNumber + ": " + np.nounPhrase);
-        }
+        //for(NounPhrase np: nounPhrases){
+        //    System.out.println("Sentence " + np.getSentenceNumber() + ": " + np.getNounPhrase());
+        //}
         return nounPhrases;
     }
 
-    private ArrayList<Tree> npExtractor(Tree parsedTree){
+    private static ArrayList<Tree> npExtractor(Tree parsedTree){
         ArrayList<Tree> nps = new ArrayList();
         Tree[] sent = parsedTree.children();
-        for(int i = 0; i < sent.length; i++){
-            if (sent[i].value().equalsIgnoreCase("NP")){
-                nps.add(sent[i]);
-                nps.addAll(npExtractor(sent[i]));
-            } else{
-                nps.addAll(npExtractor(sent[i]));
+        for (Tree aSent : sent) {
+            if (aSent.value().equalsIgnoreCase("NP")) {
+                nps.add(aSent);
+                nps.addAll(npExtractor(aSent));
+            } else {
+                nps.addAll(npExtractor(aSent));
             }
         }
         return nps;
