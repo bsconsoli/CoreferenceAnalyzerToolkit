@@ -10,6 +10,10 @@ public class CorpParser {
             ArrayList<NounPhrase> CorpNPs = new ArrayList<>();
 
             while ((line = br.readLine()) != null) {
+                if(line.contains("Mencoes_Unicas")){
+                    break;
+                }
+
                 if (line.contains("Cadeia_")){
                     int indexCad = line.indexOf("Cadeia");
                     int indexCadNumInit = line.indexOf('_', indexCad);
@@ -29,7 +33,6 @@ public class CorpParser {
                     CorpNPs.add(new NounPhrase(numCadeia,sent,sint));
                 }
             }
-
             txtWriter.writeNounPhraseList("outputCORP.txt", CorpNPs);
         } catch (IOException e){
             e.printStackTrace();

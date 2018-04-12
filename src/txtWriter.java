@@ -18,4 +18,17 @@ public class txtWriter {
             e.printStackTrace();
         }
     }
+
+    public static void summary(String txtName, ArrayList<String> strList){
+        PrintWriter output;
+        try {
+            output = new PrintWriter(txtName, "UTF-8");
+            for(String np:strList){
+                output.println(np);
+            }
+            output.close();
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
 }
