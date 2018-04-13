@@ -61,46 +61,38 @@ public class NounPhraseAligner {
             System.exit(-1);
         }
 
-        ArrayList<String> npAnalysis = new ArrayList<>();
+        ArrayList<NPChain> npChains = new ArrayList<>();
         HashSet<String> alreadyAdded = new HashSet<>();
         ArrayList<String> sentenceNums = new ArrayList<>();
+        ArrayList<String> uniqueMentions = new ArrayList<>();
 
         for(int i = 0; i < npCorpChainFrench.size(); i++){
-            StringBuilder line = new StringBuilder();
+
+
+
             if (i == 0 || i > 0 && !(npCorpChainFrench.get(i-1).getChainNumber().equalsIgnoreCase(npCorpChainFrench.get(i).getChainNumber()))){
                 npCorpChainFrench.get(i);
                 if (i > 0 && !(npCorpChainFrench.get(i-1).getChainNumber().equalsIgnoreCase(npCorpChainFrench.get(i).getChainNumber()) || i+1 == npCorpChainFrench.size())) {
-                    line.append("Appears in following sentences: ");
-                    for (String senNum : sentenceNums) {
-                        line.append(senNum + " ");
-                    }
+                    String chainNumber = npCorpChainFrench.get(i-1).getChainNumber();
+                    npChains.add(new NPChain(chainNumber, uniqueMentions, sentenceNums));
                     sentenceNums = new ArrayList<>();
-                    npAnalysis.add(line.toString());
+                    uniqueMentions = new ArrayList<>();
                 }
-                if (i != 0){
-                    line = new StringBuilder();
-                    npAnalysis.add(line.toString());
-                }
-                line.append("Cadeia " + npCorpChainFrench.get(i).getChainNumber());
-                npAnalysis.add(line.toString());
-                line = new StringBuilder();
-                line.append("Head: ");
             }
             if (!alreadyAdded.contains(npCorpChainFrench.get(i).getNounPhrase())) {
-                line.append(npCorpChainFrench.get(i).getNounPhrase());
+                uniqueMentions.add(npCorpChainFrench.get(i).getNounPhrase());
                 alreadyAdded.add(npCorpChainFrench.get(i).getNounPhrase());
-                npAnalysis.add(line.toString());
             }
             if (i+1 == npCorpChainFrench.size()) {
-                line = new StringBuilder();
-                line.append("Appears in following sentences: ");
-                for (String senNum : sentenceNums) {
-                    line.append(senNum + " ");
-                }
-                npAnalysis.add(line.toString());
+                String chainNumber = npCorpChainFrench.get(i).getChainNumber();
+                npChains.add(new NPChain(chainNumber, uniqueMentions, sentenceNums));
             }
             sentenceNums.add(npCorpChainFrench.get(i).getSentenceNumber());
         }
-        txtWriter.summary("sumario.txt", npAnalysis);
+        for(NPChain npc: npChains){
+            for (String unMen:npc.getUniqueMentions()){
+                System.out.println(npc.getChainNumber() + ", " + unMen + ", " + npc.getSentenceNums().size());
+            }
+        }
     }
 }
