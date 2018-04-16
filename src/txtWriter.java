@@ -11,7 +11,7 @@ public class txtWriter {
             output = new PrintWriter(txtName, "UTF-8");
             for(NounPhrase np:npList){
                 if (np.getChainNumber().equalsIgnoreCase("-1")) output.println(";"+np.getSentenceNumber()+";"+np.getNounPhrase());
-                else output.println(np.getChainNumber()+";"+np.getSentenceNumber()+";"+np.getNounPhrase());
+                else output.println(np.getChainNumber()+";"+np.getSentenceNumber()+";"+np.getNounPhrase()+";"+np.getCategoria());
             }
             output.close();
         } catch (FileNotFoundException | UnsupportedEncodingException e) {

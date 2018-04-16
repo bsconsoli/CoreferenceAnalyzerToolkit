@@ -30,7 +30,11 @@ public class CorpParser {
                     int indexSintNumInit = line.indexOf('"', indexSint);
                     int indexSintNumFin = line.indexOf('"', indexSintNumInit+1);
                     String sint = line.substring(indexSintNumInit+1, indexSintNumFin);
-                    CorpNPs.add(new NounPhrase(numCadeia,sent,sint));
+                    int indexCat = line.indexOf("Categoria=");
+                    int indexCatNumInit = line.indexOf('"', indexCat);
+                    int indexCatNumFin = line.indexOf('"', indexCatNumInit+1);
+                    String cat = line.substring(indexCatNumInit+1, indexCatNumFin);
+                    CorpNPs.add(new NounPhrase(numCadeia,sent,sint,cat));
                 }
             }
             txtWriter.writeNounPhraseList("outputCORP.txt", CorpNPs);
