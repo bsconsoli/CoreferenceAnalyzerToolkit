@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
 
 public class CorpParser {
@@ -42,5 +43,23 @@ public class CorpParser {
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+
+    public static String translate(String text) throws IOException{
+        // fetch
+        URL url = new URL("translate.google.com/#pt/fr/" + URLEncoder.encode(text, "UTF-8"));
+        URLConnection urlConnection = url.openConnection();
+        urlConnection.setRequestProperty("User-Agent", "Something Else");
+        BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+        String result = br.readLine();
+        br.close();
+        // parse
+        // System.out.println(result);
+        result = result.substring(2, result.indexOf("]]") + 1);
+        StringBuilder sb = new StringBuilder();
+        String[] splits = result.split("(?<!\\\\)\"");
+        for(int i = 1; i < splits.length; i += 8)
+            sb.append(splits[i]);
+        return sb.toString().replace("\\n", "\n").replaceAll("\\\\(.)", "$1");
     }
 }

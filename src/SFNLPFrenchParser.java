@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.ling.Word;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.ling.HasWord;
@@ -21,9 +20,7 @@ class SFNLPFrenchParser {
 
     private static ArrayList<NounPhrase> parser(LexicalizedParser lp, String filename) {
 
-        //ArrayList<Token> tokens = new ArrayList<>();
         ArrayList<NounPhrase> nounPhrases = new ArrayList<>();
-        //int tokenNumber = 0;
         int sentenceNumber = 1;
         for (List<HasWord> sentence : new DocumentPreprocessor(filename)) {
             Tree parse = lp.apply(sentence);
@@ -40,17 +37,8 @@ class SFNLPFrenchParser {
                 }
                 nounPhrases.add(new NounPhrase(String.valueOf(sentenceNumber), npstr.toString()));
             }
-            //ArrayList<TaggedWord> words = parse.taggedYield();
-            //for(TaggedWord t: words) {
-            //    tokens.add(tokenize(tokenNumber, sentenceNumber, t));
-            //    tokenNumber++;
-            //}
             sentenceNumber++;
         }
-
-        //for(NounPhrase np: nounPhrases){
-        //    System.out.println("Sentence " + np.getSentenceNumber() + ": " + np.getNounPhrase());
-        //}
         return nounPhrases;
     }
 
@@ -66,12 +54,6 @@ class SFNLPFrenchParser {
             }
         }
         return nps;
-    }
-
-    private static Token tokenize(int num, int sentNum, TaggedWord t){
-        String word = t.toString();
-        int wordBoundary = word.indexOf('/');
-        return new Token(num, sentNum,word.substring(0,wordBoundary), word.substring(wordBoundary));
     }
 
     private SFNLPFrenchParser() {} // static methods only
