@@ -33,8 +33,13 @@ public class CorpParser {
                     String sint = line.substring(indexSintNumInit+1, indexSintNumFin);
                     int indexCat = line.indexOf("Categoria=");
                     int indexCatNumInit = line.indexOf('"', indexCat);
+                    int indexCatSecondCat = line.indexOf('/', indexCat);
                     int indexCatNumFin = line.indexOf('"', indexCatNumInit+1);
-                    String cat = line.substring(indexCatNumInit+1, indexCatNumFin);
+                    String cat;
+                    if (indexCatSecondCat != -1){
+                        cat = line.substring(indexCatNumInit+1, indexCatSecondCat);
+                    }
+                    else cat = line.substring(indexCatNumInit+1, indexCatNumFin);
                     CorpNPs.add(new NounPhrase(numCadeia,sent,sint,cat));
                 }
             }
