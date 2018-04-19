@@ -1,6 +1,4 @@
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class txtWriter {
@@ -28,6 +26,20 @@ public class txtWriter {
             }
             output.close();
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void latin1Converter(String txtName) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(txtName), "UTF-8"))) {
+            String line;
+            PrintWriter output;
+            output = new PrintWriter(txtName + ".out", "ISO-8859-1");
+            while ((line = br.readLine()) != null) {
+                output.println(line);
+            }
+            output.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

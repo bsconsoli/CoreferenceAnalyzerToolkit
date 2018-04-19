@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
-public class CorpParser {
+public class Parser {
     public static void parseCorpXML(String corpXML) {
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(corpXML), "ISO-8859-1"))) {
@@ -45,6 +45,49 @@ public class CorpParser {
             }
             txtWriter.writeNounPhraseList("outputCORP.txt", CorpNPs);
         } catch (IOException e){
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
+    public static void parserCoreNLP(String coreOut) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(coreOut), "UTF-8"))) {
+            String line;
+            int numChain = 0;
+            boolean newChain = false;
+            ArrayList<NounPhrase> CoreNPs = new ArrayList<>();
+            while ((line = br.readLine()) != null) {
+                if (line.contains("Coreference set:")) {
+                    newChain = true;
+                    numChain++;
+                }
+                if (newChain) {
+                    if (line.contains(", that is: ")) {
+                        int indexSint = line.lastIndexOf("->");
+                        int indexSintNumInit = line.indexOf('"', indexSint);
+                        int indexSintNumFin = line.indexOf('"', indexSintNumInit + 1);
+                        String sint = line.substring(indexSintNumInit + 1, indexSintNumFin);
+                        int indexSent = line.indexOf("->");
+                        int indexSentNumInit = line.indexOf('(', indexSent);
+                        int indexSentNumFin = line.indexOf(',', indexSentNumInit + 1);
+                        String sent = line.substring(indexSentNumInit + 1, indexSentNumFin);
+                        CoreNPs.add(new NounPhrase(String.valueOf(numChain), sent, sint));
+                        newChain = false;
+                    }
+                }
+                if (line.contains(", that is: ")) {
+                    int indexSint = line.indexOf("that is:");
+                    int indexSintNumInit = line.indexOf('"', indexSint);
+                    int indexSintNumFin = line.indexOf('"', indexSintNumInit + 1);
+                    String sint = line.substring(indexSintNumInit + 1, indexSintNumFin);
+                    int indexSentNumInit = line.indexOf('(');
+                    int indexSentNumFin = line.indexOf(',', indexSentNumInit + 1);
+                    String sent = line.substring(indexSentNumInit + 1, indexSentNumFin);
+                    CoreNPs.add(new NounPhrase(String.valueOf(numChain), sent, sint));
+                }
+            }
+            txtWriter.writeNounPhraseList("outputCore.txt", CoreNPs);
+        } catch (IOException e) {
             e.printStackTrace();
             System.exit(-1);
         }

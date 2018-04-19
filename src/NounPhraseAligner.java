@@ -12,13 +12,17 @@ public class NounPhraseAligner {
             System.out.println("Arg1 = french NPs; Arg2 = CORP NPs");
             System.exit(-1);
         }
-        //CorpParser.parseCorpXML(args[2]);
+        //Parser.parseCorpXML(args[2]);
         //SFNLPFrenchParser.frenchParser(args[3]);
+        //txtWriter.latin1Converter(args[5]);
+        Parser.parserCoreNLP(args[6]);
 
         ArrayList<NounPhrase> npCorp = parseNPDoc(args[0], true);
         ArrayList<NounPhrase> npCorppt = parseNPDoc(args[4], true);
         ArrayList<NounPhrase> npFrench = parseNPDoc(args[1], false);
+        //ArrayList<NounPhrase> npCore = parseNPDoc(args[7], false);
         ArrayList<NounPhrase> npCorpChainFrench = new ArrayList<>();
+
 
         for(NounPhrase npF:npFrench){
             for(NounPhrase npC:npCorp){

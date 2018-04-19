@@ -9,6 +9,12 @@ public class NounPhrase {
         sentenceNumber = sentNum;
     }
 
+    public NounPhrase(String chNum,String sentNum, String np) {
+        nounPhrase = np;
+        sentenceNumber = sentNum;
+        chainNumber = chNum;
+    }
+
     public NounPhrase(String chNum, String sentNum, String np, String cat) {
         nounPhrase = np;
         sentenceNumber =sentNum;

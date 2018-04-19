@@ -9,5 +9,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="stanford-parser" level="project" />
     <orderEntry type="library" name="gtranslateapi-1.0" level="project" />
+    <orderEntry type="library" name="liblocal" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="el-api" level="project" />
+    <orderEntry type="library" name="stanford-corenlp" level="project" />
   </component>
 </module>
