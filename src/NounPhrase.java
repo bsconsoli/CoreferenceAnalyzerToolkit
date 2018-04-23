@@ -41,4 +41,8 @@ public class NounPhrase {
     public void setChainNumber(String chainNumber) {
         this.chainNumber = chainNumber;
     }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
 }

@@ -15,7 +15,7 @@ public class NounPhraseAligner {
         ArrayList<NounPhrase> npCoreFr = parseNPDoc(args[2], false); //Stanford Francês
         ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[3], true); //Stanford Inglês
 
-        ArrayList<NounPhrase> npCorpChainProject = projectChain(npCorpfr, npCoreEn);
+        ArrayList<NounPhrase> npCorpChainProject = projectChain(npCorpfr, npCoreEn); //npCoreEN para inglês | npCoreFr para francês
 
         Collections.sort(npCorpChainProject, Comparator.comparing(NounPhrase::getChainNumber));
         Collections.sort(npCorpfr, Comparator.comparing(NounPhrase::getChainNumber));
@@ -44,11 +44,12 @@ public class NounPhraseAligner {
         npChainsfr = sortByCategoria(npChainsfr);
         npChainspt = sortByCategoria(npChainspt);
         npChainspt2 = sortByCategoria(npChainspt2);
+        npChainsen = sortByCategoria(npChainsen);
 
-        ArrayList<String> summaryfr = prepareSummaryVerbose(npChainsfr);
-        ArrayList<String> summarypt = prepareSummaryVerbose(npChainspt);
-        ArrayList<String> summarypt2 = prepareSummaryVerbose(npChainspt2);
-        ArrayList<String> summaryen = prepareSummaryVerboseCORE(npChainsen);
+        ArrayList<String> summaryfr = prepareSummary(npChainsfr);
+        ArrayList<String> summarypt = prepareSummary(npChainspt);
+        ArrayList<String> summarypt2 = prepareSummary(npChainspt2);
+        ArrayList<String> summaryen = prepareSummary(npChainsen);
 
         txtWriter.summary("sumario-fr.txt", summaryfr);
         txtWriter.summary("sumario-pt-fr.txt", summarypt);
@@ -62,7 +63,7 @@ public class NounPhraseAligner {
         ArrayList<NPChain> npChainsSorted = new ArrayList<>();
         for (int i = 0; i < npChainsfr.size(); i++){
             for (int j = i; j < npChainsfr.size(); j++) {
-                if (npChainsfr.get(j).getMostMentionedCategory().equalsIgnoreCase("OUTRO")){
+                if (npChainsfr.get(j).getMostMentionedCategory().equalsIgnoreCase("OUTRO") || npChainsfr.get(j).getMostMentionedCategory().equalsIgnoreCase("null")){
                     unique.add(npChainsfr.get(j));
                 }
                 if ((j == 0 || j > 0 && npChainsfr.get(j).getMostMentionedCategory().equalsIgnoreCase(npChainsfr.get(i).getMostMentionedCategory()))) {
@@ -74,7 +75,7 @@ public class NounPhraseAligner {
             }
         }
         for (int i = 0; i < npChainsfr.size(); i++){
-            if (npChainsfr.get(i).getMostMentionedCategory().equalsIgnoreCase("OUTRO")){
+            if (npChainsfr.get(i).getMostMentionedCategory().equalsIgnoreCase("OUTRO") || npChainsfr.get(i).getMostMentionedCategory().equalsIgnoreCase("null")){
                 npChainsSorted.add(npChainsfr.get(i));
             }
         }

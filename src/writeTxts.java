@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class writeTxts {
 
     public static void main(String[] args) {
-        //Parser.parserCoreNLP(args[0]);
-        //Parser.parseCorpXML(args[1]);
+        Parser.parserCoreNLP(args[0]);
+        Parser.parseCorpXML(args[1]);
 
         //ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[2], true); //Stanford Inglês
 

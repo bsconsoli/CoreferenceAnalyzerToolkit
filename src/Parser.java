@@ -51,7 +51,8 @@ public class Parser {
     }
 
     public static void parserCoreNLP(String coreOut) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(coreOut), "UTF-8"))) {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(coreOut), "UTF-8"));
             String line;
             int numChain = 0;
             boolean newChain = false;
@@ -86,6 +87,26 @@ public class Parser {
                     CoreNPs.add(new NounPhrase(String.valueOf(numChain), sent, sint));
                 }
             }
+
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(coreOut), "UTF-8"));
+            while ((line = br.readLine()) != null) {
+                if (line.contains("Extracted the following NER entity mentions:")) {
+                    while(!line.isEmpty()){
+                        line = br.readLine();
+                        //System.out.println(line);
+                        String[] splits = line.split("\\t");
+                        if (splits.length > 0) {
+                            for (NounPhrase np : CoreNPs) {
+                                System.out.println(line);
+                                if (splits[0].equalsIgnoreCase(np.getNounPhrase())) {
+                                    np.setCategoria(splits[1]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             txtWriter.writeNounPhraseList("outputCore.txt", CoreNPs);
         } catch (IOException e) {
             e.printStackTrace();
