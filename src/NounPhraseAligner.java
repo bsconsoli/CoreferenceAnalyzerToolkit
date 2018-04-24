@@ -99,6 +99,7 @@ public class NounPhraseAligner {
                     sentenceNums = new ArrayList<>();
                     uniqueMentions = new ArrayList<>();
                     uniqueMentionFrequency = new ArrayList<>();
+                    alreadyAdded = new HashSet<>();
                 }
             }
             if (!alreadyAdded.contains(nps.get(i).getNounPhrase())) {
