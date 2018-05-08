@@ -31,6 +31,10 @@ public class Parser {
                     int indexSintNumInit = line.indexOf('"', indexSint);
                     int indexSintNumFin = line.indexOf('"', indexSintNumInit+1);
                     String sint = line.substring(indexSintNumInit+1, indexSintNumFin);
+                    int indexNuc = line.indexOf("nucleo=");
+                    int indexNucNumInit = line.indexOf('"', indexNuc);
+                    int indexNucNumFin = line.indexOf('"', indexNucNumInit+1);
+                    String nuc = line.substring(indexNucNumInit+1, indexNucNumFin);
                     int indexCat = line.indexOf("Categoria=");
                     int indexCatNumInit = line.indexOf('"', indexCat);
                     int indexCatSecondCat = line.indexOf('/', indexCat);
@@ -40,7 +44,7 @@ public class Parser {
                         cat = line.substring(indexCatNumInit+1, indexCatSecondCat);
                     }
                     else cat = line.substring(indexCatNumInit+1, indexCatNumFin);
-                    CorpNPs.add(new NounPhrase(numCadeia,sent,sint,cat));
+                    CorpNPs.add(new NounPhrase(numCadeia,sent,sint,cat,nuc));
                 }
             }
             txtWriter.writeNounPhraseList("outputCORP.txt", CorpNPs);

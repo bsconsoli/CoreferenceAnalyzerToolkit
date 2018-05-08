@@ -10,12 +10,12 @@ public class NounPhraseAligner {
     public static void main(String[] args) {
 
 
-        ArrayList<NounPhrase> npCorpfr = parseNPDoc(args[4], true); //CORP em Francês (1) ou inglês (4)
+        ArrayList<NounPhrase> npCorpfr = parseNPDoc(args[1], true); //CORP em Francês (1) ou inglês (4)
         ArrayList<NounPhrase> npCorppt = parseNPDoc(args[0], true); //CORP em Português
         ArrayList<NounPhrase> npCoreFr = parseNPDoc(args[2], false); //Stanford Francês
         ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[3], true); //Stanford Inglês
 
-        ArrayList<NounPhrase> npCorpChainProject = projectChain(npCorpfr, npCoreEn); //npCoreEN para inglês | npCoreFr para francês
+        ArrayList<NounPhrase> npCorpChainProject = projectChain(npCorpfr, npCoreFr); //npCoreEN para inglês | npCoreFr para francês
 
         Collections.sort(npCorpChainProject, Comparator.comparing(NounPhrase::getChainNumber));
         Collections.sort(npCorpfr, Comparator.comparing(NounPhrase::getChainNumber));
@@ -23,7 +23,7 @@ public class NounPhraseAligner {
         txtWriter.writeNounPhraseList("outputAligner.txt",npCorpChainProject);
 
         if (npCorpChainProject.size() == 0){
-            System.out.println("No co-reference chain matches");
+            System.out.println("No coreference chain matches");
             System.exit(-1);
         }
 
@@ -33,7 +33,8 @@ public class NounPhraseAligner {
         ArrayList<NPChain> npChainsen = buildNPChainList(npCoreEn);
 
         System.out.println("Numero Cadeias CORP: " + npChainspt.size());
-        System.out.println("Numero Cadeias Stanford: " + npChainsen.size());
+        System.out.println("Numero Cadeias Projetadas: " + npChainsfr.size());
+        //System.out.println("Numero Cadeias Stanford: " + npChainsen.size());
 
 
         Collections.sort(npChainsfr, Comparator.comparing(NPChain::getSize).reversed());
@@ -46,9 +47,9 @@ public class NounPhraseAligner {
         npChainspt2 = sortByCategoria(npChainspt2);
         npChainsen = sortByCategoria(npChainsen);
 
-        ArrayList<String> summaryfr = prepareSummary(npChainsfr);
-        ArrayList<String> summarypt = prepareSummary(npChainspt);
-        ArrayList<String> summarypt2 = prepareSummary(npChainspt2);
+        ArrayList<String> summaryfr = prepareSummaryVerbose(npChainsfr);
+        ArrayList<String> summarypt = prepareSummaryVerbose(npChainspt);
+        ArrayList<String> summarypt2 = prepareSummaryVerbose(npChainspt2);
         ArrayList<String> summaryen = prepareSummary(npChainsen);
 
         txtWriter.summary("sumario-fr.txt", summaryfr);
@@ -187,7 +188,7 @@ public class NounPhraseAligner {
             while ((line = br.readLine()) != null) {
                 if (line.equalsIgnoreCase("")) continue;
                 String[] splitNP = line.split(";");
-                if (annotatedForCoreference) npList.add(new NounPhrase(splitNP[0],splitNP[1],splitNP[2],splitNP[3]));
+                if (annotatedForCoreference) npList.add(new NounPhrase(splitNP[0],splitNP[1],splitNP[2],splitNP[3],splitNP[4]));
                 else npList.add(new NounPhrase(splitNP[1],splitNP[2]));
             }
         } catch (IOException e){
@@ -202,7 +203,7 @@ public class NounPhraseAligner {
         for(NounPhrase npF:secondary){
             for(NounPhrase npC:origin){
                 if(npF.getNounPhrase().equalsIgnoreCase(npC.getNounPhrase())){
-                    npCorpChainProject.add(new NounPhrase(npC.getChainNumber(),npF.getSentenceNumber(),npF.getNounPhrase(),npC.getCategoria()));
+                    npCorpChainProject.add(new NounPhrase(npC.getChainNumber(),npF.getSentenceNumber(),npF.getNounPhrase(),npC.getCategoria(), npC.getNucleus()));
                     break;
                 }
             }

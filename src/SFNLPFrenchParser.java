@@ -6,6 +6,7 @@ import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.trees.*;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.trees.international.french.FrenchHeadFinder;
 
 class SFNLPFrenchParser {
 
@@ -19,7 +20,7 @@ class SFNLPFrenchParser {
     }
 
     private static ArrayList<NounPhrase> parser(LexicalizedParser lp, String filename) {
-
+        FrenchHeadFinder headFinder = new FrenchHeadFinder();
         ArrayList<NounPhrase> nounPhrases = new ArrayList<>();
         int sentenceNumber = 1;
         for (List<HasWord> sentence : new DocumentPreprocessor(filename)) {
@@ -35,7 +36,9 @@ class SFNLPFrenchParser {
                         npstr.append(nounPhrase.get(j)).append(" ");
                     }
                 }
-                nounPhrases.add(new NounPhrase(String.valueOf(sentenceNumber), npstr.toString()));
+                NounPhrase newNP = new NounPhrase(String.valueOf(sentenceNumber), npstr.toString());
+                newNP.setNucleus(np.headTerminal(headFinder,null).yieldWords().get(0).word());
+                nounPhrases.add(newNP);
             }
             sentenceNumber++;
         }

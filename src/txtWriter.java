@@ -8,8 +8,8 @@ public class txtWriter {
         try {
             output = new PrintWriter(txtName, "UTF-8");
             for(NounPhrase np:npList){
-                if (np.getChainNumber().equalsIgnoreCase("-1")) output.println(";"+np.getSentenceNumber()+";"+np.getNounPhrase());
-                else output.println(np.getChainNumber()+";"+np.getSentenceNumber()+";"+np.getNounPhrase()+";"+np.getCategoria());
+                if (np.getChainNumber().equalsIgnoreCase("-1")) output.println(";"+np.getSentenceNumber()+";"+np.getNounPhrase()+";"+np.getNucleus());
+                else output.println(np.getChainNumber()+";"+np.getSentenceNumber()+";"+np.getNounPhrase()+";"+np.getCategoria()+";"+np.getNucleus());
             }
             output.close();
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
