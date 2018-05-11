@@ -36,8 +36,7 @@ class SFNLPFrenchParser {
                         npstr.append(nounPhrase.get(j)).append(" ");
                     }
                 }
-                NounPhrase newNP = new NounPhrase(String.valueOf(sentenceNumber), npstr.toString());
-                newNP.setNucleus(np.headTerminal(headFinder,null).yieldWords().get(0).word());
+                NounPhrase newNP = new NounPhrase(String.valueOf(sentenceNumber), npstr.toString(),np.headTerminal(headFinder,null).yieldWords().get(0).word());
                 nounPhrases.add(newNP);
             }
             sentenceNumber++;

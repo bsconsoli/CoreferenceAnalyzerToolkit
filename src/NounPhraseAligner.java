@@ -13,7 +13,7 @@ public class NounPhraseAligner {
         ArrayList<NounPhrase> npCorpfr = parseNPDoc(args[1], true); //CORP em Francês (1) ou inglês (4)
         ArrayList<NounPhrase> npCorppt = parseNPDoc(args[0], true); //CORP em Português
         ArrayList<NounPhrase> npCoreFr = parseNPDoc(args[2], false); //Stanford Francês
-        ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[3], true); //Stanford Inglês
+        //ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[3], true); //Stanford Inglês
 
         ArrayList<NounPhrase> npCorpChainProject = projectChain(npCorpfr, npCoreFr); //npCoreEN para inglês | npCoreFr para francês
 
@@ -30,7 +30,7 @@ public class NounPhraseAligner {
         ArrayList<NPChain> npChainsfr = buildNPChainList(npCorpChainProject);
         ArrayList<NPChain> npChainspt = buildNPChainList(npCorpfr);
         ArrayList<NPChain> npChainspt2 = buildNPChainList(npCorppt);
-        ArrayList<NPChain> npChainsen = buildNPChainList(npCoreEn);
+        //ArrayList<NPChain> npChainsen = buildNPChainList(npCoreEn);
 
         System.out.println("Numero Cadeias CORP: " + npChainspt.size());
         System.out.println("Numero Cadeias Projetadas: " + npChainsfr.size());
@@ -40,22 +40,22 @@ public class NounPhraseAligner {
         Collections.sort(npChainsfr, Comparator.comparing(NPChain::getSize).reversed());
         Collections.sort(npChainspt, Comparator.comparing(NPChain::getSize).reversed());
         Collections.sort(npChainspt2, Comparator.comparing(NPChain::getSize).reversed());
-        Collections.sort(npChainsen, Comparator.comparing(NPChain::getSize).reversed());
+        //Collections.sort(npChainsen, Comparator.comparing(NPChain::getSize).reversed());
 
         npChainsfr = sortByCategoria(npChainsfr);
         npChainspt = sortByCategoria(npChainspt);
         npChainspt2 = sortByCategoria(npChainspt2);
-        npChainsen = sortByCategoria(npChainsen);
+        //npChainsen = sortByCategoria(npChainsen);
 
-        ArrayList<String> summaryfr = prepareSummaryVerbose(npChainsfr);
-        ArrayList<String> summarypt = prepareSummaryVerbose(npChainspt);
-        ArrayList<String> summarypt2 = prepareSummaryVerbose(npChainspt2);
-        ArrayList<String> summaryen = prepareSummary(npChainsen);
+        ArrayList<String> summaryfr = prepareSummary(npChainsfr);
+        ArrayList<String> summarypt = prepareSummary(npChainspt);
+        ArrayList<String> summarypt2 = prepareSummary(npChainspt2);
+        //ArrayList<String> summaryen = prepareSummary(npChainsen);
 
         txtWriter.summary("sumario-fr.txt", summaryfr);
         txtWriter.summary("sumario-pt-fr.txt", summarypt);
         txtWriter.summary("sumario-pt.txt", summarypt2);
-        txtWriter.summary("sumario-en.txt", summaryen);
+        //txtWriter.summary("sumario-en.txt", summaryen);
 
     }
 
@@ -129,7 +129,7 @@ public class NounPhraseAligner {
         for(NPChain npc: npCs){
             summary.add("Cadeia: " + npc.getChainNumber() + " | Tamanho: " + npc.getSize() + " | Categoria da Menção com Maior Frequência: " + npc.getMostMentionedCategory());
             for (int i = 0; i < npc.getUniqueMentions().size(); i++){
-                summary.add("Menção: " + npc.getUniqueMentions().get(i).getNounPhrase() + " | Frenquência: " + npc.getUniqueMentionFreq().get(i) + " | Categoria: " + npc.getUniqueMentions().get(i).getCategoria());
+                summary.add("Menção: " + npc.getUniqueMentions().get(i).getNounPhrase() + " | Frenquência: " + npc.getUniqueMentionFreq().get(i) + " | Categoria: " + npc.getUniqueMentions().get(i).getCategoria() + " | Núcleo: " + npc.getUniqueMentions().get(i).getNucleus());
             }
             summary.add("");
         }
@@ -165,10 +165,10 @@ public class NounPhraseAligner {
                 summary.add("Cadeias de " + npc.getMostMentionedCategory());
             }
             for (int j = 0; j < npc.getUniqueMentions().size(); j++) {
-                sent.append(npc.getUniqueMentions().get(j).getNounPhrase() + " - ");
+                sent.append(npc.getUniqueMentions().get(j).getNounPhrase() + " (" + npc.getUniqueMentionFreq().get(j) + ")" + " - ");
             }
             sent.deleteCharAt(sent.lastIndexOf("-"));
-            sent.append("(" + npc.getSize() + ")");
+            sent.append("| (" + npc.getSize() + ")");
             summary.add(sent.toString());
             numChains++;
             sent = new StringBuilder();
@@ -189,7 +189,7 @@ public class NounPhraseAligner {
                 if (line.equalsIgnoreCase("")) continue;
                 String[] splitNP = line.split(";");
                 if (annotatedForCoreference) npList.add(new NounPhrase(splitNP[0],splitNP[1],splitNP[2],splitNP[3],splitNP[4]));
-                else npList.add(new NounPhrase(splitNP[1],splitNP[2]));
+                else npList.add(new NounPhrase(splitNP[1],splitNP[2],splitNP[3]));
             }
         } catch (IOException e){
             e.printStackTrace();
@@ -200,12 +200,20 @@ public class NounPhraseAligner {
 
     private static ArrayList<NounPhrase> projectChain(ArrayList<NounPhrase> origin, ArrayList<NounPhrase> secondary){
         ArrayList<NounPhrase> npCorpChainProject = new ArrayList<>();
+        NounPhrase chosen = null;
         for(NounPhrase npF:secondary){
             for(NounPhrase npC:origin){
                 if(npF.getNounPhrase().equalsIgnoreCase(npC.getNounPhrase())){
-                    npCorpChainProject.add(new NounPhrase(npC.getChainNumber(),npF.getSentenceNumber(),npF.getNounPhrase(),npC.getCategoria(), npC.getNucleus()));
+                    chosen = new NounPhrase(npC.getChainNumber(),npF.getSentenceNumber(),npF.getNounPhrase(),npC.getCategoria(), npF.getNucleus());
                     break;
                 }
+                if(npF.getNucleus().equalsIgnoreCase(npC.getNucleus())){
+                    chosen = new NounPhrase(npC.getChainNumber(),npF.getSentenceNumber(),npF.getNounPhrase(),npC.getCategoria(), npF.getNucleus());
+                }
+            }
+            if (chosen != null) {
+                npCorpChainProject.add(chosen);
+                chosen = null;
             }
         }
         return npCorpChainProject;

@@ -5,16 +5,17 @@ public class NounPhrase {
     private String nucleus;
     private String categoria;
 
-    public NounPhrase(String sentNum, String np) {
+    public NounPhrase(String sentNum, String np, String nuc) {
         nounPhrase = np;
         sentenceNumber = sentNum;
+        nucleus = nuc;
     }
 
-    public NounPhrase(String chNum,String sentNum, String np) {
-        nounPhrase = np;
-        sentenceNumber = sentNum;
-        chainNumber = chNum;
-    }
+    //public NounPhrase(String chNum,String sentNum, String np) {
+    //    nounPhrase = np;
+    //    sentenceNumber = sentNum;
+    //    chainNumber = chNum;
+    //}
 
     public NounPhrase(String chNum, String sentNum, String np, String cat, String nuc) {
         nounPhrase = np;

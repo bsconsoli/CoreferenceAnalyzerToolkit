@@ -7,15 +7,16 @@ public class writeTxts {
 
     public static void main(String[] args) {
 
-        SFNLPFrenchParser.frenchParser(args[3]);
+        //SFNLPFrenchParser.frenchParser(args[3]);
         //Parser.parserCoreNLP(args[0]);
         //Parser.parseCorpXML(args[1]);
 
-        //ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[2], true); //Stanford Inglês
+        ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[2], true); //Stanford Inglês
 
         //txtWriter.writeNounPhraseforTL("CorNPforTL.txt", npCoreEn);
         //txtWriter.writeNounPhraseInfoforTL("CorNPInfoforTL.txt", npCoreEn);
-        //txtWriter.joinTLNPInfo("CorNPforTL.txt", "CorNPInfoforTL.txt");
+        //txtWriter.writeHeadforTL("CorHeadforTL.txt", npCoreEn);
+        txtWriter.joinTLNPInfo("CorNPforTL.txt", "CorNPInfoforTL.txt", "CorHeadforTL.txt");
 
     }
     private static ArrayList<NounPhrase> parseNPDoc(String filename, boolean annotatedForCoreference){
@@ -27,7 +28,7 @@ public class writeTxts {
                 if (line.equalsIgnoreCase("")) continue;
                 String[] splitNP = line.split(";");
                 if (annotatedForCoreference) npList.add(new NounPhrase(splitNP[0],splitNP[1],splitNP[2],splitNP[3],splitNP[4]));
-                else npList.add(new NounPhrase(splitNP[1],splitNP[2]));
+                else npList.add(new NounPhrase(splitNP[1],splitNP[2],splitNP[3]));
             }
         } catch (IOException e){
             e.printStackTrace();
