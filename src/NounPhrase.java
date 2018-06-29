@@ -11,11 +11,12 @@ public class NounPhrase {
         nucleus = nuc;
     }
 
-    //public NounPhrase(String chNum,String sentNum, String np) {
-    //    nounPhrase = np;
-    //    sentenceNumber = sentNum;
-    //    chainNumber = chNum;
-    //}
+    public NounPhrase(String chNum,String sentNum, String np, String nuc) {
+        nounPhrase = np;
+        sentenceNumber = sentNum;
+        chainNumber = chNum;
+        nucleus = nuc;
+    }
 
     public NounPhrase(String chNum, String sentNum, String np, String cat, String nuc) {
         nounPhrase = np;

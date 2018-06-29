@@ -76,7 +76,21 @@ public class Parser {
                         int indexSentNumInit = line.indexOf('(', indexSent);
                         int indexSentNumFin = line.indexOf(',', indexSentNumInit + 1);
                         String sent = line.substring(indexSentNumInit + 1, indexSentNumFin);
-                        CoreNPs.add(new NounPhrase(String.valueOf(numChain), sent, sint));
+                        int indexNucNum = line.indexOf("->");
+                        int indexNucNumInit = line.indexOf(',', indexNucNum);
+                        int indexNucNumFin = line.indexOf(',', indexNucNumInit + 1);
+                        String nucNum = line.substring(indexNucNumInit+1,indexNucNumFin);
+                        int indexTokInit = line.lastIndexOf("[");
+                        int indexTokFin = line.indexOf(",", indexTokInit);
+                        String tok = line.substring(indexTokInit+1,indexTokFin);
+                        int headNum = Integer.parseInt(nucNum) - Integer.parseInt(tok);
+                        String[] splitNP = sint.split(" ");
+                        System.out.println(headNum);
+                        for(String str:splitNP){
+                            System.out.println(str);
+                        }
+                        String head = splitNP[headNum];
+                        CoreNPs.add(new NounPhrase(String.valueOf(numChain), sent, sint, head));
                         newChain = false;
                     }
                 }
@@ -88,7 +102,16 @@ public class Parser {
                     int indexSentNumInit = line.indexOf('(');
                     int indexSentNumFin = line.indexOf(',', indexSentNumInit + 1);
                     String sent = line.substring(indexSentNumInit + 1, indexSentNumFin);
-                    CoreNPs.add(new NounPhrase(String.valueOf(numChain), sent, sint));
+                    int indexNucNumInit = line.indexOf(',');
+                    int indexNucNumFin = line.indexOf(',', indexNucNumInit + 1);
+                    String nucNum = line.substring(indexNucNumInit+1,indexNucNumFin);
+                    int indexTokInit = line.indexOf("[");
+                    int indexTokFin = line.indexOf(",", indexTokInit);
+                    String tok = line.substring(indexTokInit+1,indexTokFin);
+                    int headNum = Integer.parseInt(nucNum) - Integer.parseInt(tok);
+                    String[] splitNP = sint.split(" ");
+                    String head = splitNP[headNum];
+                    CoreNPs.add(new NounPhrase(String.valueOf(numChain), sent, sint, head));
                 }
             }
 
@@ -97,11 +120,9 @@ public class Parser {
                 if (line.contains("Extracted the following NER entity mentions:")) {
                     while(!line.isEmpty()){
                         line = br.readLine();
-                        //System.out.println(line);
                         String[] splits = line.split("\\t");
                         if (splits.length > 0) {
                             for (NounPhrase np : CoreNPs) {
-                                System.out.println(line);
                                 if (splits[0].equalsIgnoreCase(np.getNounPhrase())) {
                                     np.setCategoria(splits[1]);
                                 }

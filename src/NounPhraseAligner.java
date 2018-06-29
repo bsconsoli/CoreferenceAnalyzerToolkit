@@ -9,57 +9,56 @@ import java.util.HashSet;
 public class NounPhraseAligner {
     public static void main(String[] args) {
 
-
-        ArrayList<NounPhrase> npCorpfr = parseNPDoc(args[1], true); //CORP em Francês (1) ou inglês (4)
+        ArrayList<NounPhrase> npCorpfrPtTL = parseNPDoc(args[1], true); //CORP em Francês (1) ou inglês (4)
         ArrayList<NounPhrase> npCorppt = parseNPDoc(args[0], true); //CORP em Português
         ArrayList<NounPhrase> npCoreFr = parseNPDoc(args[2], false); //Stanford Francês
-        //ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[3], true); //Stanford Inglês
+        ArrayList<NounPhrase> npCorefrEnTL = parseNPDoc(args[3], true); //Stanford Inglês - TL para Francês
 
-        ArrayList<NounPhrase> npCorpChainProject = projectChain(npCorpfr, npCoreFr); //npCoreEN para inglês | npCoreFr para francês
+        ArrayList<NounPhrase> npCorpChainProjectPT = projectChain(npCorpfrPtTL, npCoreFr);
+        ArrayList<NounPhrase> npCorpChainProjectEN = projectChain(npCorefrEnTL, npCoreFr);
 
-        Collections.sort(npCorpChainProject, Comparator.comparing(NounPhrase::getChainNumber));
-        Collections.sort(npCorpfr, Comparator.comparing(NounPhrase::getChainNumber));
+        Collections.sort(npCorpChainProjectPT, Comparator.comparing(NounPhrase::getChainNumber));
+        Collections.sort(npCorpChainProjectEN, Comparator.comparing(NounPhrase::getChainNumber));
+        Collections.sort(npCorpfrPtTL, Comparator.comparing(NounPhrase::getChainNumber));
 
-        txtWriter.writeNounPhraseList("outputAligner.txt",npCorpChainProject);
+        txtWriter.writeNounPhraseList("outputAligner.txt",npCorpChainProjectPT);
 
-        if (npCorpChainProject.size() == 0){
+        if (npCorpChainProjectPT.size() == 0){
             System.out.println("No coreference chain matches");
             System.exit(-1);
         }
 
-        ArrayList<NPChain> npChainsfr = buildNPChainList(npCorpChainProject);
-        ArrayList<NPChain> npChainspt = buildNPChainList(npCorpfr);
+        ArrayList<NPChain> npChainsfr = buildNPChainList(npCorpChainProjectPT);
+        ArrayList<NPChain> npChainspt = buildNPChainList(npCorpfrPtTL);
         ArrayList<NPChain> npChainspt2 = buildNPChainList(npCorppt);
-        //ArrayList<NPChain> npChainsen = buildNPChainList(npCoreEn);
+        ArrayList<NPChain> npChainsen = buildNPChainList(npCorpChainProjectEN);
 
         System.out.println("Numero Cadeias CORP: " + npChainspt.size());
         System.out.println("Numero Cadeias Projetadas: " + npChainsfr.size());
-        //System.out.println("Numero Cadeias Stanford: " + npChainsen.size());
-
+        System.out.println("Numero Cadeias Stanford: " + npChainsen.size());
 
         Collections.sort(npChainsfr, Comparator.comparing(NPChain::getSize).reversed());
         Collections.sort(npChainspt, Comparator.comparing(NPChain::getSize).reversed());
         Collections.sort(npChainspt2, Comparator.comparing(NPChain::getSize).reversed());
-        //Collections.sort(npChainsen, Comparator.comparing(NPChain::getSize).reversed());
+        Collections.sort(npChainsen, Comparator.comparing(NPChain::getSize).reversed());
 
         npChainsfr = sortByCategoria(npChainsfr);
         npChainspt = sortByCategoria(npChainspt);
         npChainspt2 = sortByCategoria(npChainspt2);
-        //npChainsen = sortByCategoria(npChainsen);
+        npChainsen = sortByCategoria(npChainsen);
 
         ArrayList<String> summaryfr = prepareSummary(npChainsfr);
         ArrayList<String> summarypt = prepareSummary(npChainspt);
         ArrayList<String> summarypt2 = prepareSummary(npChainspt2);
-        //ArrayList<String> summaryen = prepareSummary(npChainsen);
+        ArrayList<String> summaryen = prepareSummary(npChainsen);
 
-        txtWriter.summary("sumario-fr.txt", summaryfr);
+        txtWriter.summary("sumario-fr-pt.txt", summaryfr);
         txtWriter.summary("sumario-pt-fr.txt", summarypt);
         txtWriter.summary("sumario-pt.txt", summarypt2);
-        //txtWriter.summary("sumario-en.txt", summaryen);
-
+        txtWriter.summary("sumario-fr-en.txt", summaryen);
     }
 
-    private static ArrayList<NPChain> sortByCategoria(ArrayList<NPChain> npChainsfr) {
+    private static ArrayList<NPChain> sortByCategoria(ArrayList<NPChain> npChainsfr){
         HashSet<NPChain> unique = new HashSet<>();
         ArrayList<NPChain> npChainsSorted = new ArrayList<>();
         for (int i = 0; i < npChainsfr.size(); i++){
@@ -67,7 +66,7 @@ public class NounPhraseAligner {
                 if (npChainsfr.get(j).getMostMentionedCategory().equalsIgnoreCase("OUTRO") || npChainsfr.get(j).getMostMentionedCategory().equalsIgnoreCase("null")){
                     unique.add(npChainsfr.get(j));
                 }
-                if ((j == 0 || j > 0 && npChainsfr.get(j).getMostMentionedCategory().equalsIgnoreCase(npChainsfr.get(i).getMostMentionedCategory()))) {
+                if ((j == 0 || j > 0 && npChainsfr.get(j).getMostMentionedCategory().equalsIgnoreCase(npChainsfr.get(i).getMostMentionedCategory()))){
                     if (!unique.contains(npChainsfr.get(j))) {
                         npChainsSorted.add(npChainsfr.get(j));
                         unique.add(npChainsfr.get(j));
@@ -165,10 +164,10 @@ public class NounPhraseAligner {
                 summary.add("Cadeias de " + npc.getMostMentionedCategory());
             }
             for (int j = 0; j < npc.getUniqueMentions().size(); j++) {
-                sent.append(npc.getUniqueMentions().get(j).getNounPhrase() + " (" + npc.getUniqueMentionFreq().get(j) + ")" + " - ");
+                sent.append("["+npc.getUniqueMentions().get(j).getNounPhrase() + "] (" + npc.getUniqueMentionFreq().get(j) + ")" + " - ");
             }
             sent.deleteCharAt(sent.lastIndexOf("-"));
-            sent.append("| (" + npc.getSize() + ")");
+            sent.append(" " + npc.getSize() + "");
             summary.add(sent.toString());
             numChains++;
             sent = new StringBuilder();

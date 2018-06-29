@@ -8,7 +8,7 @@ public class writeTxts {
     public static void main(String[] args) {
 
         //SFNLPFrenchParser.frenchParser(args[3]);
-        //Parser.parserCoreNLP(args[0]);
+        Parser.parserCoreNLP(args[0]);
         //Parser.parseCorpXML(args[1]);
 
         ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[2], true); //Stanford Inglês
@@ -17,8 +17,8 @@ public class writeTxts {
         //txtWriter.writeNounPhraseInfoforTL("CorNPInfoforTL.txt", npCoreEn);
         //txtWriter.writeHeadforTL("CorHeadforTL.txt", npCoreEn);
         txtWriter.joinTLNPInfo("CorNPforTL.txt", "CorNPInfoforTL.txt", "CorHeadforTL.txt");
-
     }
+
     private static ArrayList<NounPhrase> parseNPDoc(String filename, boolean annotatedForCoreference){
         ArrayList<NounPhrase> npList = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
