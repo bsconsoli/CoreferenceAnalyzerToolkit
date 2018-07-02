@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 
-public class NounPhraseAligner {
+public class NounPhraseAlignerComparable {
     public static void main(String[] args) {
 
         ArrayList<NounPhrase> npCorpfrPtTL = parseNPDoc(args[1], true); //CORP em Francês (1) ou inglês (4)
@@ -34,8 +34,8 @@ public class NounPhraseAligner {
         ArrayList<NPChain> npChainsen = buildNPChainList(npCorpChainProjectEN);
 
         System.out.println("Numero Cadeias CORP: " + npChainspt.size());
-        System.out.println("Numero Cadeias Projetadas: " + npChainsfr.size());
-        System.out.println("Numero Cadeias Stanford: " + npChainsen.size());
+        System.out.println("Numero Cadeias Projetadas-PT: " + npChainsfr.size());
+        System.out.println("Numero Cadeias Projetadas-EN: " + npChainsen.size());
 
         Collections.sort(npChainsfr, Comparator.comparing(NPChain::getSize).reversed());
         Collections.sort(npChainspt, Comparator.comparing(NPChain::getSize).reversed());
@@ -197,11 +197,11 @@ public class NounPhraseAligner {
         return npList;
     }
 
-    private static ArrayList<NounPhrase> projectChain(ArrayList<NounPhrase> origin, ArrayList<NounPhrase> secondary){
+    private static ArrayList<NounPhrase> projectChain(ArrayList<NounPhrase> projector, ArrayList<NounPhrase> projectee){
         ArrayList<NounPhrase> npCorpChainProject = new ArrayList<>();
         NounPhrase chosen = null;
-        for(NounPhrase npF:secondary){
-            for(NounPhrase npC:origin){
+        for(NounPhrase npF:projectee){
+            for(NounPhrase npC:projector){
                 if(npF.getNounPhrase().equalsIgnoreCase(npC.getNounPhrase())){
                     chosen = new NounPhrase(npC.getChainNumber(),npF.getSentenceNumber(),npF.getNounPhrase(),npC.getCategoria(), npF.getNucleus());
                     break;
