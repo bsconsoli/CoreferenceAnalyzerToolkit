@@ -9,14 +9,14 @@ public class writeTxts {
 
         //SFNLPFrenchParser.frenchParser(args[3]);
         Parser.parserCoreNLP(args[0]);
-        //Parser.parseCorpXML(args[1]);
+        Parser.parseCorpXML(args[1]);
 
         ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[2], true); //Stanford Inglês
 
         //txtWriter.writeNounPhraseforTL("CorNPforTL.txt", npCoreEn);
         //txtWriter.writeNounPhraseInfoforTL("CorNPInfoforTL.txt", npCoreEn);
         //txtWriter.writeHeadforTL("CorHeadforTL.txt", npCoreEn);
-        txtWriter.joinTLNPInfo("CorNPforTL.txt", "CorNPInfoforTL.txt", "CorHeadforTL.txt");
+        //txtWriter.joinTLNPInfo("CorNPforTL.txt", "CorNPInfoforTL.txt", "CorHeadforTL.txt");
     }
 
     private static ArrayList<NounPhrase> parseNPDoc(String filename, boolean annotatedForCoreference){

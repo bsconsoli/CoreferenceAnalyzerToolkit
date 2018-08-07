@@ -9,10 +9,11 @@ import java.util.HashSet;
 public class NounPhraseAlignerComparable {
     public static void main(String[] args) {
 
-        ArrayList<NounPhrase> npCorpfrPtTL = parseNPDoc(args[1], true); //CORP em Francês (1) ou inglês (4)
-        ArrayList<NounPhrase> npCorppt = parseNPDoc(args[0], true); //CORP em Português
+        ArrayList<NounPhrase> npCorpfrPtTL = parseNPDoc(args[1], true); //CORP em Francês
+        ArrayList<NounPhrase> npCorpPt = parseNPDoc(args[0], true); //CORP em Português
         ArrayList<NounPhrase> npCoreFr = parseNPDoc(args[2], false); //Stanford Francês
         ArrayList<NounPhrase> npCorefrEnTL = parseNPDoc(args[3], true); //Stanford Inglês - TL para Francês
+        ArrayList<NounPhrase> npCoreEn = parseNPDoc(args[5], true);
 
         ArrayList<NounPhrase> npCorpChainProjectPT = projectChain(npCorpfrPtTL, npCoreFr);
         ArrayList<NounPhrase> npCorpChainProjectEN = projectChain(npCorefrEnTL, npCoreFr);
@@ -30,10 +31,12 @@ public class NounPhraseAlignerComparable {
 
         ArrayList<NPChain> npChainsfr = buildNPChainList(npCorpChainProjectPT);
         ArrayList<NPChain> npChainspt = buildNPChainList(npCorpfrPtTL);
-        ArrayList<NPChain> npChainspt2 = buildNPChainList(npCorppt);
+        ArrayList<NPChain> npChainspt2 = buildNPChainList(npCorpPt);
         ArrayList<NPChain> npChainsen = buildNPChainList(npCorpChainProjectEN);
+        ArrayList<NPChain> npChainsen2 = buildNPChainList(npCoreEn);
 
-        System.out.println("Numero Cadeias CORP: " + npChainspt.size());
+        System.out.println("Numero Cadeias CORP: " + npChainspt2.size());
+        System.out.println("Numero de Cadeias Stanford: " + npChainsen2.size());
         System.out.println("Numero Cadeias Projetadas-PT: " + npChainsfr.size());
         System.out.println("Numero Cadeias Projetadas-EN: " + npChainsen.size());
 
@@ -41,21 +44,25 @@ public class NounPhraseAlignerComparable {
         Collections.sort(npChainspt, Comparator.comparing(NPChain::getSize).reversed());
         Collections.sort(npChainspt2, Comparator.comparing(NPChain::getSize).reversed());
         Collections.sort(npChainsen, Comparator.comparing(NPChain::getSize).reversed());
+        Collections.sort(npChainsen2, Comparator.comparing(NPChain::getSize).reversed());
 
         npChainsfr = sortByCategoria(npChainsfr);
         npChainspt = sortByCategoria(npChainspt);
         npChainspt2 = sortByCategoria(npChainspt2);
         npChainsen = sortByCategoria(npChainsen);
+        npChainsen2 = sortByCategoria(npChainsen2);
 
         ArrayList<String> summaryfr = prepareSummary(npChainsfr);
         ArrayList<String> summarypt = prepareSummary(npChainspt);
         ArrayList<String> summarypt2 = prepareSummary(npChainspt2);
         ArrayList<String> summaryen = prepareSummary(npChainsen);
+        ArrayList<String> summaryen2 = prepareSummary(npChainsen2);
 
         txtWriter.summary("sumario-fr-pt.txt", summaryfr);
         txtWriter.summary("sumario-pt-fr.txt", summarypt);
         txtWriter.summary("sumario-pt.txt", summarypt2);
         txtWriter.summary("sumario-fr-en.txt", summaryen);
+        txtWriter.summary("sumario-en.txt", summaryen2);
     }
 
     private static ArrayList<NPChain> sortByCategoria(ArrayList<NPChain> npChainsfr){
